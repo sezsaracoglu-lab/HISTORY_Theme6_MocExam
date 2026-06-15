@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Theme 6 — Exam Practice</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root{
+    --bg:#f4efe3;
+    --panel:#fbf8f1;
+    --panel-2:#f2ebdd;
+    --gold:#9a7836;
+    --gold-soft:#b08d4e;
+    --ink:#2b2620;
+    --ink-dim:#6d6555;
+    --line:#e3d9c6;
+    --correct:#5d7a46;
+    --correct-bg:#e9efdd;
+    --wrong:#9c4d40;
+    --wrong-bg:#f6e6e1;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'DM Sans',sans-serif;
+    font-weight:300;
+    line-height:1.55;
+    padding:0 0 80px;
+  }
+
+  header{
+    text-align:center;
+    padding:54px 20px 34px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#faf6ec,#f4efe3);
+  }
+  header .eyebrow{
+    font-family:'DM Sans',sans-serif;
+    letter-spacing:.42em;
+    text-transform:uppercase;
+    font-size:.66rem;
+    color:var(--gold-soft);
+    margin-bottom:14px;
+  }
+  header h1{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:600;
+    font-size:2.9rem;
+    margin:0 0 6px;
+    color:var(--ink);
+    letter-spacing:.01em;
+  }
+  header .sub{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-size:1.25rem;
+    color:var(--ink-dim);
+  }
+
+  .wrap{max-width:840px;margin:0 auto;padding:0 22px;}
+
+  /* score bar */
+  .scorebar{
+    position:sticky;top:0;z-index:20;
+    background:rgba(244,239,227,.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 22px;
+    margin-bottom:26px;
+  }
+  .scorebar .label{
+    letter-spacing:.28em;text-transform:uppercase;
+    font-size:.62rem;color:var(--gold-soft);
+  }
+  .scorebar .val{
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.5rem;color:var(--gold);
+  }
+  .scorebar .right{display:flex;gap:18px;align-items:center;}
+  .reset{
+    background:transparent;border:1px solid var(--line);
+    color:var(--ink-dim);font-family:'DM Sans';font-size:.7rem;
+    letter-spacing:.14em;text-transform:uppercase;
+    padding:7px 14px;border-radius:2px;cursor:pointer;transition:.2s;
+  }
+  .reset:hover{border-color:var(--gold-soft);color:var(--gold);}
+
+  /* section heading */
+  .section-head{
+    margin:46px 0 18px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--line);
+  }
+  .section-head .num{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;color:var(--gold-soft);font-size:1rem;
+  }
+  .section-head h2{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:600;font-size:1.7rem;margin:2px 0 0;color:var(--gold);
+  }
+
+  .q{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:22px 24px 20px;
+    margin-bottom:16px;
+  }
+  .q .qmeta{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:10px;
+  }
+  .q .qnum{
+    font-family:'Cormorant Garamond',serif;font-style:italic;
+    color:var(--gold-soft);font-size:1.05rem;
+  }
+  .q .pts{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-dim);}
+  .q .stem{
+    font-size:1.04rem;color:var(--ink);margin-bottom:16px;font-weight:400;
+  }
+  .opt{
+    display:block;width:100%;text-align:left;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    color:var(--ink);
+    font-family:'DM Sans';font-size:.95rem;font-weight:300;
+    padding:12px 15px;margin-bottom:9px;border-radius:3px;
+    cursor:pointer;transition:.18s;display:flex;gap:11px;align-items:flex-start;
+  }
+  .opt .letter{
+    color:var(--gold-soft);font-family:'Cormorant Garamond',serif;
+    font-size:1.05rem;flex-shrink:0;min-width:14px;
+  }
+  .opt:hover:not(:disabled){border-color:var(--gold-soft);background:#efe7d6;}
+  .opt:disabled{cursor:default;}
+  .opt.correct{border-color:var(--correct);background:var(--correct-bg);}
+  .opt.correct .letter{color:var(--correct);}
+  .opt.wrong{border-color:var(--wrong);background:var(--wrong-bg);}
+  .opt.wrong .letter{color:var(--wrong);}
+  .opt.dim{opacity:.45;}
+
+  .explain{
+    margin-top:6px;
+    border-left:2px solid var(--gold-soft);
+    padding:11px 16px;
+    background:#f7f2e7;
+    font-size:.9rem;color:var(--ink-dim);
+    border-radius:0 3px 3px 0;
+    display:none;
+  }
+  .explain.show{display:block;}
+  .explain b{color:var(--gold);font-weight:500;}
+  .explain .tag{
+    display:inline-block;font-size:.58rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--correct);
+    margin-bottom:5px;
+  }
+  .explain .tag.miss{color:var(--wrong);}
+
+  footer{
+    text-align:center;color:var(--ink-dim);font-size:.75rem;
+    margin-top:60px;font-family:'Cormorant Garamond';font-style:italic;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Research Methods &middot; Clinical Psychology</div>
+  <h1>Theme 6 — Exam Practice</h1>
+  <div class="sub">Measurement &middot; Causation &middot; Design &middot; Chronometric Methods</div>
+</header>
+
+<div class="scorebar">
+  <span class="label">Progress</span>
+  <div class="right">
+    <span class="val"><span id="score">0</span> / <span id="answered">0</span> <span style="color:var(--ink-dim);font-size:.9rem;">(50)</span></span>
+    <button class="reset" onclick="resetAll()">Reset</button>
+  </div>
+</div>
+
+<div class="wrap" id="quiz"></div>
+
+<footer>Built from Barker, Pistrang &amp; Elliott (Ch. 4 &amp; 8) and Lindemann &amp; Fischer, Chronometric Methods.</footer>
+
+<script>
+const SECTIONS = [
+{
+  title:"Operationalization",
+  qs:[
+    {s:"The process of going from a construct to its associated measure is most precisely called:",
+     o:["Operationalization","Reification","Standardization","Triangulation"],a:0,
+     e:"<b>Operationalization</b> is the process of finding an indicator (a measure) for a latent construct. The construct cannot be observed directly; it is only inferred from the measurement operations linked to it."},
+    {s:"When the text describes a construct as <i>latent</i>, it means that the construct:",
+     o:["Can be directly observed under the right conditions","Can never be known directly and is only inferred from its measures","Is always measured qualitatively","Has no theoretical definition"],a:1,
+     e:"A <b>latent</b> construct is never observed directly. It is inferred from its associated measurement operations — which is why no single measure can perfectly capture it."},
+    {s:"The doctrine of <i>operationism</i> (Stevens, 1935) held that:",
+     o:["Constructs require multiple converging indicators","A concept is identical to its measurement operations","Operational definitions are unnecessary","Measurement always changes the thing measured"],a:1,
+     e:"<b>Operationism</b> claimed a concept simply <i>is</i> its measurement operations — e.g. \"intelligence is what IQ tests measure.\" This was later rejected by philosophers."},
+    {s:"Operationism was replaced by the critical-realist strategy of converging operations, which advocates:",
+     o:["Restricting study to observable behaviour only","Using a single, perfectly valid indicator","Using multiple indicators to measure an underlying construct","Avoiding inferred constructs entirely"],a:2,
+     e:"<b>Converging operations</b> (Grace, 2001) uses several imperfect indicators that together triangulate on the underlying construct, accepting that each measure only partially captures it."},
+    {s:"Measuring social support by counting network size versus assessing relationship quality shows that any measure presupposes a view of the concept. This is known as:",
+     o:["Reactivity of measurement","The theory-dependence of measurement","Demand characteristics","Construct underrepresentation"],a:1,
+     e:"<b>Theory-dependence of measurement</b>: there are no pure observations. How you choose to measure something already assumes a particular view of what that something is."}
+  ]
+},
+{
+  title:"Advantages of Quantitative Methods &amp; Positivism",
+  qs:[
+    {s:"Which is a stated advantage of quantitative measurement?",
+     o:["It removes the need for any theory","A well-developed theory of reliability and validity tells researchers how much confidence to place in measures","It captures feelings and meanings better than qualitative methods","It eliminates researcher inference entirely"],a:1,
+     e:"Numbers permit <b>greater precision</b>, and the theory of reliability and validity lets researchers quantify measurement error and gauge confidence in their measures."},
+    {s:"Quantitative methods are said to fit best with which view of science?",
+     o:["Phenomenological","Hypothetico-deductive","Hermeneutic","Constructivist"],a:1,
+     e:"Quantitative methods suit the <b>hypothetico-deductive</b> approach: relationships are specified as a mathematical model and statistical inference tests how well data fit predictions."},
+    {s:"Sampling theory is valuable in quantitative research because it allows researchers to:",
+     o:["Prove causation directly","Estimate how well findings generalize to the wider population","Avoid the need for measurement","Eliminate confounding variables"],a:1,
+     e:"<b>Sampling theory</b> lets researchers estimate generalizability — how far results from the sample extend to the population it was drawn from."},
+    {s:"Which is one of the three main tenets of positivism?",
+     o:["Science should focus on unconscious motives","Scientific attention should be restricted to observable facts","All knowledge is socially constructed","Metaphysical questions are the heart of science"],a:1,
+     e:"Positivism holds that science should deal only with <b>observable facts</b> (a form of empiricism), that physical-science methods apply to social science, and that science is objective and value-free."},
+    {s:"In psychology, the positivist doctrine was taken up principally in the form of:",
+     o:["Psychoanalysis","Methodological behaviorism","Gestalt psychology","Humanistic psychology"],a:1,
+     e:"<b>Methodological behaviorism</b> (Watson, Skinner) restricted psychology to a science of observable behaviour, eschewing inner variables such as cognitions and affects."}
+  ]
+},
+{
+  title:"Causation — Conditions for Causality",
+  qs:[
+    {s:"What does the text call the \"golden rule\" of research design?",
+     o:["Random assignment solves everything","Correlation does not equal causation","Bigger samples are always better","Internal validity outranks external validity"],a:1,
+     e:"The <b>golden rule</b>: correlation does not equal causation. Correlations are necessary but not sufficient for causality — though the <i>absence</i> of correlation generally rules causation out."},
+    {s:"Which of the following is one of the four generally agreed conditions for inferring causality?",
+     o:["Random sampling","Precedence (the cause reliably precedes the effect)","Large effect size","Double-blinding"],a:1,
+     e:"The four conditions are <b>covariation, precedence, exclusion of alternative explanations,</b> and a <b>logical mechanism</b>. Precedence requires the causal variable to come before the effect in time."},
+    {s:"The causal condition that correlational designs are <i>least</i> able to satisfy — and which experiments handle best — is:",
+     o:["Covariation","Precedence","Exclusion of alternative explanations","A plausible mechanism"],a:2,
+     e:"Correlational designs can establish covariation and often precedence, but <b>excluding alternative explanations</b> (third variables) is where experimental manipulation is far superior."},
+    {s:"When we say \"smoking causes lung cancer\" or \"poverty causes ill-health,\" psychology and epidemiology usually mean:",
+     o:["Deterministic, certain causation","Probabilistic causation — increased risk, not certainty","Spurious correlation","Reverse causation"],a:1,
+     e:"These are <b>probabilistic</b> causes: they raise the likelihood of the outcome (set the conditions for likely change) rather than guaranteeing it. Exceptions always exist."}
+  ]
+},
+{
+  title:"Causation — Possible Causal Relationships",
+  qs:[
+    {s:"Therapist empathy (A) and client outcome (B) are correlated, but both are actually caused by client psychological mindedness (C). The A–B relationship is best described as:",
+     o:["Mediated","Moderated","Spurious","Confounded by reverse causation"],a:2,
+     e:"When a third variable C causes both A and B, the apparent A–B link is <b>spurious</b> — entirely explained by C."},
+    {s:"Higher therapist empathy (A) increases client self-exploration (D), which then improves outcome (B). Variable D is a:",
+     o:["Moderator variable","Mediator variable","Confound","Suppressor variable"],a:1,
+     e:"A <b>mediator</b> comes in the middle of the causal chain (A → D → B). The research enterprise is often a search for such mediating links."},
+    {s:"Therapist empathy improves outcomes for men but not for women. Client gender is acting as a:",
+     o:["Mediator variable","Moderator variable","Spurious cause","Dependent variable"],a:1,
+     e:"A <b>moderator</b> changes the strength or direction of the A–B relationship depending on its level (here, gender). It does not sit in the causal chain."},
+    {s:"The text describes a moderator variable as acting like:",
+     o:["A link in a chain","A gate, valve, or volume control","A mirror","A confound"],a:1,
+     e:"A <b>moderator</b> is likened to a gate/valve/volume control — it turns the A–B relationship up or down depending on its value."},
+    {s:"Client-rated therapist empathy may actually be a kind of outcome, so the empathy–outcome correlation may reflect two aspects of one construct. This sixth possibility is called:",
+     o:["Mediation","A conceptual confound (overlapping meaning)","Regression to the mean","Reverse causation"],a:1,
+     e:"A <b>conceptual confound</b> means A and B share overlapping meaning — they are partly the same construct — so the correlation may simply be one kind of outcome correlating with another."}
+  ]
+},
+{
+  title:"Non-Experimental Designs",
+  qs:[
+    {s:"Nonexperimental designs are classified, according to their aims, into:",
+     o:["Randomized and nonrandomized designs","Descriptive and correlational designs","Cross-sectional and longitudinal designs","Efficacy and effectiveness designs"],a:1,
+     e:"Nonexperimental designs split into <b>descriptive</b> (aiming to describe) and <b>correlational</b> (aiming to examine associations for prediction or causal exploration)."},
+    {s:"Which of the following is given as an example of a descriptive study?",
+     o:["A randomized controlled trial of CBT","Descriptive epidemiological research on incidence and prevalence","A dismantling study","A path analysis of mediators"],a:1,
+     e:"Descriptive examples include <b>descriptive epidemiology</b> (incidence/prevalence), consumer-satisfaction research, and phenomenological research."},
+    {s:"Correlational studies are also referred to as:",
+     o:["Active manipulation studies","Passive observation or naturalistic studies","Quasi-experiments","Open clinical trials"],a:1,
+     e:"Correlational designs are <b>passive observation / naturalistic studies</b> — variables are measured as they occur, without active experimental manipulation."},
+    {s:"A correlational study in which all observations are made at a single point in time is:",
+     o:["Longitudinal","Cross-sectional","Interrupted time-series","Prospective"],a:1,
+     e:"<b>Cross-sectional</b> designs measure at one time point; <b>longitudinal</b> designs measure at two or more time points."},
+    {s:"Although correlation cannot establish causation, the text notes that the <i>absence</i> of a correlation:",
+     o:["Confirms causation","Generally rules out a causal relationship","Is statistically meaningless","Indicates a moderator is present"],a:1,
+     e:"While correlation is necessary but not sufficient for causality, the <b>absence of correlation generally rules out</b> a causal relationship."}
+  ]
+},
+{
+  title:"Four Types of Validity (Cook &amp; Campbell)",
+  qs:[
+    {s:"Which defining question corresponds to <i>statistical conclusion validity</i>?",
+     o:["Is it causal?","Is there an effect?","What does it mean?","Does it generalize?"],a:1,
+     e:"The four questions, asked in sequence: statistical conclusion = <b>\"Is there an effect?\"</b>, internal = \"Is it causal?\", construct = \"What does it mean?\", external = \"Does it generalize?\""},
+    {s:"Internal validity refers to the degree to which:",
+     o:["Results generalize to other settings","Causality can be inferred — whether the IV produced the change in the DV","The measure is internally consistent","The sample represents the population"],a:1,
+     e:"<b>Internal validity</b> = is the independent variable actually producing the change in the dependent variable? (Not to be confused with internal <i>consistency</i>, a type of reliability.)"},
+    {s:"The validity type answering \"What does it mean?\" — concerning the meaning of measurement operations and the experimental manipulation — is:",
+     o:["Statistical conclusion validity","Construct validity","Internal validity","External validity"],a:1,
+     e:"<b>Construct validity</b> (from Cronbach &amp; Meehl, 1955) assesses what the measures and the manipulation actually represent — generalizability to the underlying construct."},
+    {s:"A lab study with tight control over young, homogeneous undergraduates typically achieves:",
+     o:["High external but low internal validity","High internal but often low external validity","High construct but low statistical conclusion validity","Low validity of all four types"],a:1,
+     e:"The central dilemma is a <b>trade-off</b>: lab control buys high internal validity but often sacrifices external validity (real-world generalizability). Field research tends to show the reverse."},
+    {s:"Ecological validity specifically assesses:",
+     o:["Whether the statistics were appropriate","How artificial the measures and procedures are compared with the real world","Whether random assignment was used","Whether the measure is reliable"],a:1,
+     e:"<b>Ecological validity</b> (related to external validity) concerns how artificial the study's measures and procedures are relative to the world outside the research setting."}
+  ]
+},
+{
+  title:"Threats to Validity",
+  qs:[
+    {s:"Clients selected for high anxiety scores tend to score lower at posttest even without effective therapy. This is:",
+     o:["Maturation","Regression to the mean","The Hawthorne effect","Secular drift"],a:1,
+     e:"<b>Regression to the mean</b> results from unreliability of measurement: extreme pretest scores partly reflect random error, which is less extreme on retest, mimicking improvement."},
+    {s:"Spontaneous recovery (improvement with no apparent external reason) is the most important instance of which threat?",
+     o:["Endogenous change","Interfering events","Reactivity of measurement","Uncontrolled selection"],a:0,
+     e:"<b>Endogenous change</b> is any change within the person; spontaneous recovery/remission is its key example. (Maturation is a special case of endogenous change.)"},
+    {s:"When the research process itself produces beneficial change — as in the factory illumination study where both raising and lowering light improved output — this is the:",
+     o:["Placebo effect","Hawthorne effect","Demand characteristic","Expectancy effect"],a:1,
+     e:"The <b>Hawthorne effect</b>: simply being studied produces change. It is named after the occupational-psychology study where any change in illumination raised output."},
+    {s:"In a nonequivalent groups design, the major threat to internal validity is:",
+     o:["Regression to the mean","Uncontrolled selection","Reactivity of measurement","Attrition"],a:1,
+     e:"Because assignment is not random, <b>uncontrolled selection</b> means the groups may differ systematically before treatment, so differences cannot be confidently attributed to the intervention."},
+    {s:"In Dimidjian et al., each therapy was delivered by a different small set of therapists, so therapy type was bound up with therapist. This is a threat to:",
+     o:["Internal validity via selection","The construct validity of the experimental intervention (confounding)","External validity","Statistical conclusion validity"],a:1,
+     e:"<b>Confounding</b> means a variable occurs inextricably with the intervention. Here it threatens the <i>construct validity of the manipulation</i>: differences might reflect the therapists, not the therapies."}
+  ]
+},
+{
+  title:"Non-Randomized (Quasi-Experimental) Designs",
+  qs:[
+    {s:"The one-group posttest-only design (X O) is almost always insufficient for causal inference because it invites the fallacy:",
+     o:["Ad hominem","Post hoc ergo propter hoc","Affirming the consequent","Base-rate neglect"],a:1,
+     e:"<b>Post hoc ergo propter hoc</b> — \"because B happened after A, B must result from A.\" Without a comparison or baseline, the one-shot design cannot rule this out."},
+    {s:"The one-group pretest–posttest design (O₁ X O₂) is also commonly known as:",
+     o:["A randomized controlled trial","An open (uncontrolled) clinical trial","A dismantling study","A factorial design"],a:1,
+     e:"Adding a pre-measure to allow a direct estimate of change gives the <b>open / uncontrolled clinical trial</b> — useful but still vulnerable to threats like spontaneous remission."},
+    {s:"Studying the impact of negative events that cannot be ethically manipulated (e.g., the Romanian orphans study) typically uses a nonequivalent groups posttest-only design, also called a:",
+     o:["Randomized block design","Natural experiment","Interrupted time-series","Latin square"],a:1,
+     e:"A <b>natural experiment</b> compares groups that differ in having experienced some life stressor or risk factor, since experimental manipulation would be unethical."},
+    {s:"The interrupted time-series design (O₁...O₂₀ X O₂₁...O₄₀) pinpoints causal influence by:",
+     o:["Randomly assigning participants","Looking for discontinuities between a series of baseline and follow-up measures","Adding a placebo control group","Matching participants on key variables"],a:1,
+     e:"The interrupted time-series looks for a <b>discontinuity</b> in a long sequence of measures at the point of the intervention. Its main threat is interfering events occurring at the same time."}
+  ]
+},
+{
+  title:"Randomized Designs",
+  qs:[
+    {s:"The essential, defining feature of a randomized experimental design is:",
+     o:["A large sample","Random assignment of participants to conditions","Use of a standardized measure","A placebo group"],a:1,
+     e:"<b>Random assignment to conditions</b> is what defines randomized designs and makes the groups equivalent except for the manipulation."},
+    {s:"Randomization (random assignment) should NOT be confused with:",
+     o:["Random sampling (unbiased selection of participants)","Blocking","Stratification","Counterbalancing"],a:0,
+     e:"<b>Random assignment</b> distributes participants across conditions to control selection bias; <b>random sampling</b> is an unbiased method of selecting participants for the study. They are different things."},
+    {s:"The primary internal-validity benefit of randomization is that it:",
+     o:["Guarantees the groups stay equivalent forever","Eliminates the likelihood of selection bias","Removes the need for control groups","Increases external validity"],a:1,
+     e:"Randomization <b>eliminates the likelihood of selection bias</b> as a threat to internal validity and permits the statistical theory of error — although by chance it can still occasionally yield unequal groups."}
+  ]
+},
+{
+  title:"Types of Comparison &amp; Control Groups",
+  qs:[
+    {s:"Wait-list control groups are valued because they control for:",
+     o:["Researcher allegiance","Reactivity of the initial assessment, instillation of hope, and spontaneous recovery","Leakage between conditions","Attrition"],a:1,
+     e:"<b>Wait-list controls</b> receive the same initial assessment then wait for treatment, controlling for assessment reactivity, instillation of hope, and spontaneous recovery."},
+    {s:"A dismantling study is one in which:",
+     o:["A new treatment is added to an existing one","The full treatment is compared with the same treatment minus one component","Two unrelated treatments are compared","Participants choose their own treatment"],a:1,
+     e:"A <b>dismantling study</b> removes one component to identify the effective ingredients. The logically equivalent reverse is a constructive/additive design that adds a component."},
+    {s:"The text distinguishes a \"control group\" from a \"comparison group\" by noting that a comparison group:",
+     o:["Receives no treatment whatsoever","Receives a viable alternative treatment (rather than just a missing ingredient)","Is never randomly assigned","Is used only in drug trials"],a:1,
+     e:"A <b>control group</b> implies an active ingredient is missing; a <b>comparison group</b> implies a viable alternative treatment is given (e.g. treatment-as-usual or an established therapy)."}
+  ]
+},
+{
+  title:"Chronometric Methods",
+  qs:[
+    {s:"The Hick-Hyman law states that reaction time is:",
+     o:["Constant regardless of task difficulty","Linearly related to the amount of information extracted from the stimulus","Inversely related to stimulus brightness","Unrelated to the number of response options"],a:1,
+     e:"The <b>Hick-Hyman law</b>: RT increases linearly with the amount of information (in bits) extracted — sorting cards by identity is slower than by colour."},
+    {s:"Donders' method of subtraction rests on the assumption that mental activities:",
+     o:["Occur all at once in parallel","Can be divided into discrete and successive processing stages","Cannot be measured by reaction time","Are identical across all tasks"],a:1,
+     e:"Donders assumed processing is built from <b>discrete, successive stages</b>, so inserting a task component adds a measurable, isolable chunk of time."},
+    {s:"In Donders' logic, the RT difference between a discrimination task (B) and a simple detection task (A) reflects the duration of:",
+     o:["Stimulus detection only","The added processes of stimulus identification and response selection","Motor execution only","Memory retrieval"],a:1,
+     e:"Task A = detection only; Task B adds <b>stimulus identification + response selection</b>. B minus A estimates the combined duration of those two added processes."},
+    {s:"In Donders' scheme, the go/no-go task (Task C) is taken to involve stimulus identification but NOT:",
+     o:["Stimulus detection","Response selection","Attention","Perception"],a:1,
+     e:"Because there is only one response button, Task C requires identification but <b>no response selection</b> — so C minus A isolates the identification stage."},
+    {s:"Sternberg's additive factors logic improved on Donders' subtraction method by overcoming its questionable assumptions of:",
+     o:["Reliability and validity","Seriality and independence of stages","Covariation and precedence","Reactivity and maturation"],a:1,
+     e:"Subtraction assumes stages are strictly serial and can be inserted/deleted without affecting others. Sternberg instead used <b>statistical interactions within a single task</b> to infer stage structure."},
+    {s:"If two independent variables in a chronometric task produce two main effects but NO interaction, the additive factors logic concludes they affect:",
+     o:["The same processing stage","Different processing stages","No stage at all","Only the motor response"],a:1,
+     e:"Purely <b>additive</b> effects (two main effects, no interaction) indicate the variables act on <b>different</b> stages. An interaction (over-additivity) would signal they affect the same stage."}
+  ]
+}
+];
+
+// flatten with global numbering
+const quiz = document.getElementById('quiz');
+let globalNum = 0;
+let answered = 0, score = 0;
+const LET = ['A','B','C','D','E'];
+
+SECTIONS.forEach((sec, si)=>{
+  const head = document.createElement('div');
+  head.className='section-head';
+  head.innerHTML = `<div class="num">Section ${si+1}</div><h2>${sec.title}</h2>`;
+  quiz.appendChild(head);
+
+  sec.qs.forEach(q=>{
+    globalNum++;
+    const n = globalNum;
+    const card = document.createElement('div');
+    card.className='q';
+    card.dataset.answered='0';
+
+    let optsHtml='';
+    q.o.forEach((opt,i)=>{
+      optsHtml += `<button class="opt" data-i="${i}" onclick="pick(this, ${n}, ${i}, ${q.a})">
+        <span class="letter">${LET[i]}</span><span>${opt}</span></button>`;
+    });
+
+    card.innerHTML = `
+      <div class="qmeta"><span class="qnum">Question ${n}</span><span class="pts">1 point</span></div>
+      <div class="stem">${q.s}</div>
+      ${optsHtml}
+      <div class="explain" id="exp-${n}"></div>`;
+    quiz.appendChild(card);
+    // stash explanation + correct index for reveal
+    card.dataset.exp = encodeURIComponent(q.e);
+    card.dataset.correct = q.a;
+    card.dataset.correctText = encodeURIComponent(q.o[q.a]);
+  });
+});
+
+function pick(btn, n, chosen, correct){
+  const card = btn.closest('.q');
+  if(card.dataset.answered==='1') return;
+  card.dataset.answered='1';
+
+  const opts = card.querySelectorAll('.opt');
+  opts.forEach(o=>{
+    o.disabled=true;
+    const idx=parseInt(o.dataset.i);
+    if(idx===correct){o.classList.add('correct');}
+    else if(idx===chosen){o.classList.add('wrong');}
+    else{o.classList.add('dim');}
+  });
+
+  const exp = document.getElementById('exp-'+n);
+  const right = (chosen===correct);
+  const tag = right
+    ? `<span class="tag">Correct</span>`
+    : `<span class="tag miss">Correct answer: ${decodeURIComponent(card.dataset.correctText)}</span>`;
+  exp.innerHTML = tag + '<br>' + decodeURIComponent(card.dataset.exp);
+  exp.classList.add('show');
+
+  answered++;
+  if(right) score++;
+  updateBar();
+}
+
+function updateBar(){
+  document.getElementById('score').textContent=score;
+  document.getElementById('answered').textContent=answered;
+}
+
+function resetAll(){
+  answered=0; score=0; updateBar();
+  document.querySelectorAll('.q').forEach(card=>{
+    card.dataset.answered='0';
+    card.querySelectorAll('.opt').forEach(o=>{
+      o.disabled=false;
+      o.classList.remove('correct','wrong','dim');
+    });
+    const exp=card.querySelector('.explain');
+    exp.classList.remove('show'); exp.innerHTML='';
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
